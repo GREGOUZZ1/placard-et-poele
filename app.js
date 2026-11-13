@@ -267,7 +267,7 @@ function openRecipe(id) {
   byId("dialog-content").innerHTML = `${recipeImage(recipe, "dialog-image")}
     <div class="dialog-inner">
       <div class="dialog-heading"><h2 id="dialog-title">${recipe.title}</h2>${favoriteButton(recipe, true)}</div>
-      <p class="dialog-description">${recipe.description}</p>
+      ${recipe.description ? `<p class="dialog-description">${recipe.description}</p>` : ""}
       ${recipeMeta(recipe)}
       <div class="servings-row">
         <strong id="servings-label">Nombre de portions</strong>
