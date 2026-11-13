@@ -125,6 +125,7 @@ const recipes = [
   },
   {
     id: "omelette-champignons", title: "Omelette aux champignons", minutes: 15, vegetarian: true,
+    photo: "omelette-champignons",
     items: [["oeufs", 200, "Œufs, sans coquille", 50], ["champignons", 220], ["beurre", 12], ["ail", 5]],
     steps: [
       "Émince les champignons et fais-les dorer dans le beurre. Ajoute l’ail haché en fin de cuisson.",
@@ -133,6 +134,7 @@ const recipes = [
   },
   {
     id: "oeufs-tomates", title: "Œufs mijotés aux tomates", minutes: 25, vegetarian: true,
+    photo: "oeufs-tomates",
     items: [["oeufs", 200, "Œufs, sans coquille", 50], ["tomates", 450], ["oignon", 80], ["ail", 5], ["huile", 14]],
     steps: [
       "Fais revenir l’oignon et l’ail dans l’huile. Ajoute les tomates en dés et laisse réduire 12 minutes.",
@@ -141,6 +143,7 @@ const recipes = [
   },
   {
     id: "tortilla", title: "Tortilla aux pommes de terre", minutes: 35, vegetarian: true,
+    photo: "tortilla",
     items: [["oeufs", 250, "Œufs, sans coquille", 50], ["pommesDeTerre", 400, "Pommes de terre épluchées"], ["oignon", 85], ["huile", 24]],
     steps: [
       "Coupe finement les pommes de terre et l’oignon. Fais-les cuire à couvert dans l’huile en remuant jusqu’à ce qu’ils soient tendres.",
@@ -149,6 +152,7 @@ const recipes = [
   },
   {
     id: "oeufs-cocotte", title: "Œufs cocotte aux épinards", minutes: 25, vegetarian: true,
+    photo: "oeufs-cocotte",
     items: [["oeufs", 200, "Œufs, sans coquille", 50], ["epinards", 160], ["creme", 80, "Crème fraîche (30 % MG)"], ["beurre", 8]],
     steps: [
       "Fais tomber les épinards à la poêle et répartis-les dans deux ramequins beurrés avec la crème.",
@@ -157,6 +161,7 @@ const recipes = [
   },
   {
     id: "pates-thon", title: "Pâtes au thon et aux tomates", minutes: 25,
+    photo: "pates-thon",
     items: [["pates", 170, "Pâtes sèches"], ["thon", 145, "Thon au naturel, égoutté"], ["tomates", 330], ["ail", 6], ["huile", 14]],
     steps: [
       "Cuis les pâtes selon le paquet et garde un peu d’eau de cuisson.",
@@ -165,6 +170,7 @@ const recipes = [
   },
   {
     id: "pates-courgettes", title: "Pâtes crémeuses aux courgettes", minutes: 25, vegetarian: true,
+    photo: "pates-courgettes",
     items: [["pates", 170, "Pâtes sèches"], ["courgette", 330], ["creme", 80, "Crème fraîche (30 % MG)"], ["ail", 6], ["huile", 12]],
     steps: [
       "Fais cuire les pâtes et réserve un peu de leur eau.",
@@ -173,6 +179,7 @@ const recipes = [
   },
   {
     id: "pates-epinards", title: "Pâtes aux épinards et à la feta", minutes: 20,
+    photo: "pates-epinards",
     items: [["pates", 160, "Pâtes sèches"], ["epinards", 200], ["feta", 85], ["huile", 12], ["ail", 5]],
     steps: [
       "Fais cuire les pâtes en gardant une louche d’eau de cuisson.",
@@ -181,6 +188,7 @@ const recipes = [
   },
   {
     id: "poulet-creme", title: "Poulet crémeux aux champignons", minutes: 25,
+    photo: "poulet-creme",
     items: [["poulet", 300], ["champignons", 270], ["creme", 100, "Crème fraîche (30 % MG)"], ["oignon", 70], ["huile", 14]],
     steps: [
       "Dore l’oignon et les champignons émincés dans la moitié de l’huile, puis réserve.",
@@ -189,6 +197,7 @@ const recipes = [
   },
   {
     id: "poulet-poivron", title: "Poulet sauté aux poivrons et au soja", minutes: 25,
+    photo: "poulet-poivron",
     items: [["poulet", 300], ["poivron", 220], ["oignon", 90], ["sauceSoja", 25], ["huile", 15]],
     steps: [
       "Émince l’oignon et le poivron et fais-les sauter dans la moitié de l’huile.",
@@ -197,6 +206,7 @@ const recipes = [
   },
   {
     id: "poulet-pommes", title: "Poulet et pommes de terre au four", minutes: 45,
+    photo: "poulet-pommes",
     items: [["poulet", 300], ["pommesDeTerre", 500, "Pommes de terre épluchées"], ["citron", 25, "Jus de citron"], ["huile", 20], ["ail", 8]],
     steps: [
       "Enrobe les dés de pommes de terre d’une partie de l’huile et enfourne à 210 °C pour 20 minutes.",
@@ -205,6 +215,7 @@ const recipes = [
   },
   {
     id: "poulet-carottes", title: "Poulet aux carottes et au yaourt citronné", minutes: 30,
+    photo: "poulet-carottes",
     items: [["poulet", 280], ["carotte", 320], ["yaourt", 120], ["citron", 25, "Jus de citron"], ["huile", 14]],
     steps: [
       "Coupe les carottes en fins bâtonnets et fais-les dorer dans la moitié de l’huile.",
@@ -213,6 +224,7 @@ const recipes = [
   },
   {
     id: "riz-thon", title: "Salade de riz au thon et concombre", minutes: 25,
+    photo: "riz-thon",
     items: [["riz", 130, "Riz cru"], ["thon", 150, "Thon au naturel, égoutté"], ["concombre", 220], ["tomates", 170], ["citron", 25, "Jus de citron"], ["huile", 15]],
     steps: [
       "Fais cuire le riz. Égoutte-le et passe-le sous l’eau froide, puis égoutte-le de nouveau.",
@@ -221,6 +233,7 @@ const recipes = [
   },
   {
     id: "riz-champignons", title: "Riz crémeux aux champignons", minutes: 30, vegetarian: true,
+    photo: "riz-champignons",
     items: [["riz", 150, "Riz cru"], ["champignons", 290], ["oignon", 80], ["creme", 80, "Crème fraîche (30 % MG)"], ["beurre", 12]],
     steps: [
       "Cuis le riz selon le paquet. Fais dorer les champignons et l’oignon émincés dans le beurre.",
@@ -229,6 +242,7 @@ const recipes = [
   },
   {
     id: "riz-pois-chiches", title: "Riz aux pois chiches et aux épinards", minutes: 25, vegetarian: true,
+    photo: "riz-pois-chiches",
     items: [["riz", 135, "Riz cru"], ["poisChiches", 240, "Pois chiches cuits, égouttés"], ["epinards", 160], ["ail", 6], ["huile", 14], ["citron", 25, "Jus de citron"]],
     steps: [
       "Cuis le riz selon le paquet. Rince et égoutte les pois chiches cuits.",
@@ -237,6 +251,7 @@ const recipes = [
   },
   {
     id: "salade-lentilles", title: "Salade de lentilles, carottes et œufs", minutes: 25, vegetarian: true,
+    photo: "salade-lentilles",
     items: [["lentilles", 280, "Lentilles vertes cuites, égouttées"], ["carotte", 160], ["oeufs", 100, "Œufs, sans coquille", 50], ["citron", 25, "Jus de citron"], ["huile", 15]],
     steps: [
       "Cuis les œufs 10 minutes dans l’eau bouillante. Refroidis-les, écale-les et coupe-les en quartiers.",
@@ -245,6 +260,7 @@ const recipes = [
   },
   {
     id: "salade-concombre", title: "Salade de concombre au yaourt", minutes: 10, vegetarian: true,
+    photo: "salade-concombre",
     items: [["concombre", 380], ["yaourt", 150], ["citron", 20, "Jus de citron"], ["ail", 4]],
     steps: [
       "Coupe le concombre en fines demi-rondelles.",
@@ -253,6 +269,7 @@ const recipes = [
   },
   {
     id: "salade-haricots", title: "Salade de haricots rouges et avocat", minutes: 15, vegetarian: true,
+    photo: "salade-haricots",
     items: [["haricots", 260, "Haricots rouges cuits, égouttés"], ["avocat", 130, "Avocat, chair"], ["tomates", 200], ["oignon", 40], ["citron", 30, "Jus de citron"], ["huile", 12]],
     steps: [
       "Rince et égoutte les haricots rouges cuits. Coupe les tomates et l’avocat en dés.",
@@ -261,6 +278,7 @@ const recipes = [
   },
   {
     id: "salade-pois-chiches", title: "Salade de pois chiches et concombre", minutes: 15, vegetarian: true,
+    photo: "salade-pois-chiches",
     items: [["poisChiches", 300, "Pois chiches cuits, égouttés"], ["concombre", 180], ["tomates", 220], ["citron", 25, "Jus de citron"], ["huile", 16]],
     steps: [
       "Rince et égoutte les pois chiches cuits. Coupe le concombre et les tomates en dés.",
@@ -269,6 +287,7 @@ const recipes = [
   },
   {
     id: "houmous", title: "Tartinade de pois chiches au citron", minutes: 10, vegetarian: true,
+    photo: "houmous",
     items: [["poisChiches", 300, "Pois chiches cuits, égouttés"], ["citron", 30, "Jus de citron"], ["ail", 5], ["huile", 20]],
     steps: [
       "Rince et égoutte les pois chiches cuits, puis mixe-les avec le jus de citron, l’ail et l’huile.",
@@ -277,6 +296,7 @@ const recipes = [
   },
   {
     id: "soupe-courgettes", title: "Soupe de courgettes et pommes de terre", minutes: 30, vegetarian: true,
+    photo: "soupe-courgettes",
     items: [["courgette", 450], ["pommesDeTerre", 230, "Pommes de terre épluchées"], ["oignon", 80], ["huile", 13]],
     steps: [
       "Émince l’oignon et fais-le revenir dans l’huile. Ajoute les courgettes et les pommes de terre en dés.",
@@ -285,6 +305,7 @@ const recipes = [
   },
   {
     id: "soupe-petits-pois", title: "Velouté de petits pois et de yaourt", minutes: 20, vegetarian: true,
+    photo: "soupe-petits-pois",
     items: [["petitsPois", 350, "Petits pois cuits, égouttés"], ["pommesDeTerre", 180, "Pommes de terre épluchées"], ["oignon", 70], ["yaourt", 80], ["huile", 10]],
     steps: [
       "Fais revenir l’oignon émincé dans l’huile. Ajoute les pommes de terre en petits dés et couvre d’eau.",
@@ -293,6 +314,7 @@ const recipes = [
   },
   {
     id: "gratin-pommes", title: "Gratin de pommes de terre à la crème", minutes: 55, vegetarian: true,
+    photo: "gratin-pommes",
     items: [["pommesDeTerre", 560, "Pommes de terre épluchées"], ["creme", 160, "Crème fraîche (30 % MG)"], ["lait", 140, "Lait demi-écrémé"], ["ail", 6], ["beurre", 10]],
     steps: [
       "Frotte un plat avec l’ail et beurre-le. Coupe les pommes de terre en tranches fines et dispose-les dans le plat.",
@@ -301,6 +323,7 @@ const recipes = [
   },
   {
     id: "gratin-courgettes", title: "Gratin de courgettes au parmesan", minutes: 40,
+    photo: "gratin-courgettes",
     items: [["courgette", 480], ["creme", 100, "Crème fraîche (30 % MG)"], ["oeufs", 100, "Œufs, sans coquille", 50], ["parmesan", 45], ["huile", 12]],
     steps: [
       "Dore les rondelles de courgette dans l’huile pour évaporer une partie de leur eau.",
@@ -309,6 +332,7 @@ const recipes = [
   },
   {
     id: "pommes-thon", title: "Pommes de terre garnies au thon", minutes: 45,
+    photo: "pommes-thon",
     items: [["pommesDeTerre", 500, "Pommes de terre épluchées"], ["thon", 150, "Thon au naturel, égoutté"], ["yaourt", 110], ["citron", 24, "Jus de citron"]],
     steps: [
       "Coupe les pommes de terre en deux et cuis-les à 210 °C jusqu’à ce qu’elles soient tendres.",
@@ -317,6 +341,7 @@ const recipes = [
   },
   {
     id: "tartines-champignons", title: "Tartines aux champignons crémeux", minutes: 20, vegetarian: true,
+    photo: "tartines-champignons",
     items: [["pain", 140], ["champignons", 280], ["creme", 70, "Crème fraîche (30 % MG)"], ["ail", 5], ["beurre", 12]],
     steps: [
       "Fais griller le pain. Émince les champignons et dore-les dans le beurre à feu vif.",
@@ -325,6 +350,7 @@ const recipes = [
   },
   {
     id: "tartines-thon", title: "Tartines de thon au yaourt citronné", minutes: 10,
+    photo: "tartines-thon",
     items: [["pain", 140], ["thon", 140, "Thon au naturel, égoutté"], ["yaourt", 90], ["citron", 20, "Jus de citron"], ["concombre", 120]],
     steps: [
       "Égoutte le thon et écrase-le avec le yaourt et le jus de citron.",
@@ -333,6 +359,7 @@ const recipes = [
   },
   {
     id: "porridge", title: "Porridge à la banane", minutes: 12, vegetarian: true,
+    photo: "porridge",
     items: [["avoine", 100], ["lait", 330, "Lait demi-écrémé"], ["banane", 160, "Banane, chair"]],
     steps: [
       "Chauffe les flocons d’avoine et le lait à feu doux en remuant jusqu’à ce que le mélange épaississe.",
@@ -341,6 +368,7 @@ const recipes = [
   },
   {
     id: "pain-perdu", title: "Pain perdu à la banane", minutes: 15, vegetarian: true,
+    photo: "pain-perdu",
     items: [["pain", 140], ["oeufs", 100, "Œufs, sans coquille", 50], ["lait", 150, "Lait demi-écrémé"], ["banane", 150, "Banane, chair"], ["beurre", 14]],
     steps: [
       "Bats les œufs avec le lait et trempe les tranches de pain des deux côtés.",
