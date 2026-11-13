@@ -14,6 +14,30 @@
   <script src="ingredients.js" defer></script>
   <script src="recipes.js?v=b4551ed1579c" defer></script>
   <script src="app.js?v=d12dc93ad3a4" defer></script>
+  <script>
+    // GitHub Pages may serve an older copy of the homepage from cache.
+    window.addEventListener("pageshow", async () => {
+      if (!["https:", "http:"].includes(location.protocol)) return;
+      const catalogVersion = page => {
+        const script = page.querySelector('script[src^="recipes.js?v="]');
+        return script && new URL(script.getAttribute("src"), location.href).searchParams.get("v");
+      };
+      const current = catalogVersion(document);
+      const pageUrl = new URL(location.href);
+      const checkUrl = new URL("index.html", pageUrl);
+      checkUrl.searchParams.set("check", Date.now());
+      try {
+        const response = await fetch(checkUrl, {cache: "no-store"});
+        if (!response.ok) return;
+        const latest = catalogVersion(new DOMParser().parseFromString(await response.text(), "text/html"));
+        if (!latest || latest === current || latest === pageUrl.searchParams.get("v")) return;
+        pageUrl.searchParams.set("v", latest);
+        location.replace(pageUrl);
+      } catch {
+        // The loaded catalog still works when the update check is unavailable.
+      }
+    });
+  </script>
 </head>
 <body>
   <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
