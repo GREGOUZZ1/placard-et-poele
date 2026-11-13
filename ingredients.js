@@ -4,6 +4,22 @@
 // Extrait de https://proteines.info/donnees/ : énergie, protéines, glucides et lipides pour 100 g.
 // Les quantités correspondent à l’aliment dans l’état indiqué dans le libellé de la recette.
 const ingredients = {
+  // Valeurs moyennes pour la pâtisserie, arrondies pour 100 g.
+  farine: {"name":"Farine de blé T55","aliases":["farine","farine de blé","farine t55"],"nutrition":[350,9.9,73.7,1]},
+  sucre: {"name":"Sucre blanc","aliases":["sucre","sucre en poudre"],"nutrition":[399,0,99.7,0]},
+  chocolat: {"name":"Chocolat noir 70 %","aliases":["chocolat noir","chocolat","pépites de chocolat noir"],"nutrition":[591,10.4,26.9,46.3]},
+  pomme: {"name":"Pomme","aliases":["pommes"],"nutrition":[52,0.3,11.6,0.2]},
+  poire: {"name":"Poire","aliases":["poires"],"nutrition":[53,0.4,11.4,0.2]},
+  miel: {"name":"Miel","aliases":[],"nutrition":[331,0.7,82.1,0]},
+  amandes: {"name":"Amandes","aliases":["amande","poudre d’amandes","amandes moulues"],"nutrition":[615,18.8,9.5,51.3]},
+  levure: {"name":"Levure chimique","aliases":["poudre à lever"],"nutrition":[100,0,25,0]},
+  pateFeuilletee: {"name":"Pâte feuilletée crue","aliases":["pâte feuilletée"],"nutrition":[390,6,37,24]},
+  maizena: {"name":"Fécule de maïs","aliases":["maïzena","maizena"],"nutrition":[362,0.4,89.2,0.25]},
+  cremeLiquide: {"name":"Crème liquide entière","aliases":["crème liquide entière 30 %","crème fleurette"],"nutrition":[292,2.4,3,30]},
+  gelatine: {"name":"Gélatine","aliases":["feuilles de gélatine"],"nutrition":[348,86.9,0,0.1]},
+  jaunes: {"name":"Jaunes d’œufs","aliases":["jaune d’œuf"],"nutrition":[325,15.8,0.7,28.8]},
+  blancs: {"name":"Blancs d’œufs","aliases":["blanc d’œuf"],"nutrition":[47,10.3,0.7,0.2]},
+  cacao: {"name":"Cacao non sucré","aliases":["cacao","cacao en poudre"],"nutrition":[387,22.4,11.6,20.6]},
   poulet: { name: "Filet de poulet", aliases: ["poulet", "blanc de poulet", "filets de poulet", "escalope de poulet"], nutrition: [110, 23.4, 0, 1.5] },
   oeufs: { name: "Œufs", aliases: ["œuf", "oeuf", "oeufs"], nutrition: [140, 12.7, 0.27, 9.83] },
   courgette: { name: "Courgette", aliases: ["courgettes", "zucchini"], nutrition: [17, 1.2, 1.8, 0.26] },

@@ -24,6 +24,7 @@ const state = {
   storage: "frigo",
   filter: "all",
   favoritesOnly: false,
+  dessertOnly: globalThis.location?.hash === "#desserts",
   visible: PAGE_SIZE,
   currentRecipe: null,
   servings: BASE_SERVINGS,
@@ -184,13 +185,22 @@ function recipeCard({ recipe, missing }, hasPantry) {
 
 function matchingRecipes(available) {
   const matches = recipes.map(recipe => matchRecipe(recipe, available));
-  return matches.filter(({ recipe, missing }) => {
+  const ranked = matches.filter(({ recipe, missing }) => {
     if (state.favoritesOnly && !state.favorites.has(recipe.id)) return false;
+    if (!state.favoritesOnly && Boolean(recipe.dessert) !== state.dessertOnly) return false;
     if (state.filter === "ready") return missing.length === 0;
     if (state.filter === "quick") return recipe.minutes <= 25;
     if (state.filter === "vegetarian") return recipe.vegetarian;
     return true;
   }).sort((a, b) => b.score - a.score || b.found - a.found);
+  if (state.favoritesOnly) return ranked;
+  const seen = new Set();
+  return ranked.filter(({ recipe }) => {
+    const key = recipe.group ?? recipe.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function emptyResults(hasPantry) {
@@ -222,7 +232,10 @@ function renderRecipes() {
   byId("favorites-toggle").setAttribute("aria-pressed", state.favoritesOnly);
   byId("favorites-count").hidden = favoritesCount === 0;
   byId("favorites-count").textContent = favoritesCount;
-  byId("recipes-title").textContent = state.favoritesOnly ? "Mes favoris" : "À table !";
+  byId("recipes-title").textContent = state.favoritesOnly ? "Mes favoris" : state.dessertOnly ? "Pâtisserie & desserts" : "À table !";
+  for (const button of document.querySelectorAll("[data-category]")) {
+    button.setAttribute("aria-pressed", !state.favoritesOnly && (button.dataset.category === "dessert") === state.dessertOnly);
+  }
   byId("recipes-description").textContent = hasPantry
     ? "Les recettes les plus proches de ton stock s’affichent en premier."
     : "Des idées simples, avec les valeurs nutritionnelles par portion.";
@@ -262,7 +275,7 @@ function focusIngredient() {
 function openRecipe(id) {
   const recipe = recipeById.get(id);
   state.currentRecipe = recipe;
-  state.servings = BASE_SERVINGS;
+  state.servings = recipe.servings ?? BASE_SERVINGS;
   state.nutritionMode = "portion";
   byId("dialog-content").innerHTML = `${recipeImage(recipe, "dialog-image")}
     <div class="dialog-inner">
@@ -310,7 +323,7 @@ function renderDialogValues() {
   const available = availableIngredients();
   byId("serving-count").value = servings;
   byId("less-servings").disabled = servings <= 1;
-  byId("more-servings").disabled = servings >= 8;
+  byId("more-servings").disabled = servings >= 24;
   const isTotal = nutritionMode === "total";
   for (const button of byId("dialog-content").querySelectorAll("[data-nutrition]")) {
     button.setAttribute("aria-pressed", button.dataset.nutrition === nutritionMode);
@@ -319,7 +332,7 @@ function renderDialogValues() {
   byId("recipe-nutrition").setAttribute("aria-label", isTotal ? `Pour ${servings} portion${servings > 1 ? "s" : ""}` : "Par portion");
 
   byId("dialog-ingredients").innerHTML = recipe.items.map(([id, grams, label, gramsPerUnit]) => {
-    const weight = grams * servings / BASE_SERVINGS;
+    const weight = grams * servings / (recipe.servings ?? BASE_SERVINGS);
     const count = gramsPerUnit ? weight / gramsPerUnit : 0;
     const units = count ? ` <small>(≈ ${number.format(count)} ${count <= 1 ? "œuf" : "œufs"})</small>` : "";
     const hasIngredient = available.has(id);
@@ -400,7 +413,19 @@ byId("hero-add").addEventListener("click", event => {
   event.preventDefault();
   focusIngredient();
 });
-byId("recipes-nav").addEventListener("click", () => showRecipes(false));
+byId("recipes-nav").addEventListener("click", () => {
+  state.dessertOnly = false;
+  showRecipes(false);
+});
+for (const button of document.querySelectorAll("[data-category]")) {
+  button.addEventListener("click", () => {
+    state.dessertOnly = button.dataset.category === "dessert";
+    const url = new URL(location.href);
+    url.hash = state.dessertOnly ? "desserts" : "recettes";
+    history.replaceState(null, "", url);
+    showRecipes(false);
+  });
+}
 byId("favorites-toggle").addEventListener("click", () => {
   showRecipes(!state.favoritesOnly);
   byId("recettes").scrollIntoView({ block: "start" });
@@ -442,7 +467,7 @@ byId("dialog-content").addEventListener("click", event => {
   if (!button) return;
   const { servings, nutrition, favorite } = button.dataset;
   if (servings) {
-    state.servings = Math.max(1, Math.min(8, state.servings + Number(servings)));
+    state.servings = Math.max(1, Math.min(24, state.servings + Number(servings)));
     renderDialogValues();
     if (button.disabled) byId(Number(servings) < 0 ? "more-servings" : "less-servings").focus({ preventScroll: true });
   } else if (nutrition) {

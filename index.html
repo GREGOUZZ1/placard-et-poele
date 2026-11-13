@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script src="ingredients.js" defer></script>
-  <script src="recipes.js?v=b4551ed1579c" defer></script>
-  <script src="app.js?v=d12dc93ad3a4" defer></script>
+  <script src="ingredients.js?v=ca276e63e981" defer></script>
+  <script src="recipes.js?v=a3373923377f" defer></script>
+  <script src="app.js?v=8b11b116b8af" defer></script>
   <script>
     // GitHub Pages may serve an older copy of the homepage from cache.
     window.addEventListener("pageshow", async () => {
@@ -116,6 +116,10 @@
       </aside>
 
       <section class="recipes" id="recettes" aria-labelledby="recipes-title">
+        <div class="filters" id="desserts" role="group" aria-label="Catégorie de recettes" style="margin-bottom: 1rem">
+          <button type="button" data-category="savory" aria-pressed="true">Plats salés</button>
+          <button type="button" data-category="dessert" aria-pressed="false">Pâtisserie &amp; desserts</button>
+        </div>
         <div class="recipes-heading">
           <h2 id="recipes-title">À table !</h2>
           <p id="recipes-description">Des idées simples, avec les valeurs nutritionnelles par portion.</p>
