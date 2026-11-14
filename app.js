@@ -24,7 +24,8 @@ const state = {
   storage: "frigo",
   filter: "all",
   favoritesOnly: false,
-  dessertOnly: globalThis.location?.hash === "#desserts",
+  view: "",
+  searched: false,
   visible: PAGE_SIZE,
   currentRecipe: null,
   servings: BASE_SERVINGS,
@@ -170,7 +171,7 @@ function recipeCard({ recipe, missing }, hasPantry) {
   if (hasPantry) {
     const count = missing.length;
     status = count
-      ? `<span class="match">${count} ingrédient${count > 1 ? "s" : ""} à prévoir</span>`
+      ? `<span class="match">${state.view === "ingredients" ? `À prévoir : ${missing.map(([id]) => ingredients[id].name).join(", ")}` : `${count} ingrédient${count > 1 ? "s" : ""} à prévoir`}</span>`
       : `<span class="match match-ready">${icon("check")} Tout est là</span>`;
   }
   return `<article class="recipe-card">
@@ -185,17 +186,22 @@ function recipeCard({ recipe, missing }, hasPantry) {
 
 function matchingRecipes(available) {
   const matches = recipes.map(recipe => matchRecipe(recipe, available));
-  const ranked = matches.filter(({ recipe, missing }) => {
+  const searching = state.view === "ingredients" && !state.favoritesOnly;
+  const ranked = matches.filter(({ recipe, missing, found }) => {
     if (state.favoritesOnly && !state.favorites.has(recipe.id)) return false;
-    if (!state.favoritesOnly && Boolean(recipe.dessert) !== state.dessertOnly) return false;
+    if (searching && !found) return false;
+    if (!searching && !state.favoritesOnly && Boolean(recipe.dessert) !== (state.view === "desserts")) return false;
     if (state.filter === "ready") return missing.length === 0;
     if (state.filter === "quick") return recipe.minutes <= 25;
     if (state.filter === "vegetarian") return recipe.vegetarian;
     return true;
   }).sort((a, b) => b.score - a.score || b.found - a.found);
   if (state.favoritesOnly) return ranked;
+  const candidates = searching && ranked.some(({ missing }) => missing.length === 0)
+    ? ranked.filter(({ missing }) => missing.length === 0)
+    : ranked;
   const seen = new Set();
-  return ranked.filter(({ recipe }) => {
+  return candidates.filter(({ recipe }) => {
     const key = recipe.group ?? recipe.id;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -207,7 +213,11 @@ function emptyResults(hasPantry) {
   let title = "Aucune recette pour ce filtre";
   let detail = "Essaie un autre filtre ou affiche toutes les recettes.";
   let button = '<button class="button button-outline" type="button" data-reset-filter>Voir toutes les recettes</button>';
-  if (state.favoritesOnly && !state.favorites.size) {
+  if (state.view === "ingredients" && !state.favoritesOnly) {
+    title = hasPantry ? "Aucune recette avec ces ingrédients" : "Ton stock est vide";
+    detail = "Ajoute d’autres ingrédients pour élargir ta recherche.";
+    button = '<button class="button button-outline" type="button" data-focus-ingredient>Ajouter des ingrédients</button>';
+  } else if (state.favoritesOnly && !state.favorites.size) {
     title = "Tes favoris sont encore vides";
     detail = "Clique sur le cœur d’une recette pour la retrouver ici.";
     button = '<button class="button button-outline" type="button" data-show-all>Parcourir les recettes</button>';
@@ -224,6 +234,7 @@ function emptyResults(hasPantry) {
 function renderRecipes() {
   const available = availableIngredients();
   const hasPantry = available.size > 0;
+  const searching = state.view === "ingredients" && !state.favoritesOnly;
   const matches = matchingRecipes(available);
   const displayed = matches.slice(0, state.visible);
   const count = matches.length;
@@ -232,11 +243,17 @@ function renderRecipes() {
   byId("favorites-toggle").setAttribute("aria-pressed", state.favoritesOnly);
   byId("favorites-count").hidden = favoritesCount === 0;
   byId("favorites-count").textContent = favoritesCount;
-  byId("recipes-title").textContent = state.favoritesOnly ? "Mes favoris" : state.dessertOnly ? "Pâtisserie & desserts" : "À table !";
+  byId("recettes").hidden = searching && !state.searched;
+  byId("catalog-categories").hidden = searching || state.favoritesOnly;
+  byId("filters").hidden = searching;
+  byId("recipes-title").textContent = state.favoritesOnly ? "Mes favoris"
+    : searching ? "Tes résultats" : state.view === "desserts" ? "Pâtisserie & desserts" : "À table !";
   for (const button of document.querySelectorAll("[data-category]")) {
-    button.setAttribute("aria-pressed", !state.favoritesOnly && (button.dataset.category === "dessert") === state.dessertOnly);
+    button.setAttribute("aria-pressed", !state.favoritesOnly && (button.dataset.category === "dessert") === (state.view === "desserts"));
   }
-  byId("recipes-description").textContent = hasPantry
+  byId("recipes-description").textContent = searching && count
+    ? matches[0].missing.length ? "Voici les recettes les plus proches, avec les ingrédients à prévoir." : "Tu as tous les ingrédients. Vérifie les quantités avant de commencer."
+    : searching ? "" : hasPantry
     ? "Les recettes les plus proches de ton stock s’affichent en premier."
     : "Des idées simples, avec les valeurs nutritionnelles par portion.";
   for (const button of filterButtons) button.setAttribute("aria-pressed", button.dataset.filter === state.filter);
@@ -268,6 +285,8 @@ function toggleFavorite(id, fromDialog) {
 }
 
 function focusIngredient() {
+  if (location.hash !== "#ingredients") location.hash = "ingredients";
+  setView("ingredients");
   byId("ingredients").scrollIntoView({ block: "start" });
   byId("ingredient-input").focus({ preventScroll: true });
 }
@@ -348,7 +367,8 @@ byId("ingredient-form").addEventListener("submit", event => {
   event.preventDefault();
   const field = byId("ingredient-input");
   const entries = field.value.split(/[,;\n]+/).map(parseIngredient).filter(Boolean);
-  if (!entries.length) {
+  const searching = event.submitter === byId("search-recipes");
+  if (!entries.length && (!searching || !pantrySize())) {
     message("Saisis au moins un ingrédient.");
     field.focus();
     return;
@@ -363,6 +383,14 @@ byId("ingredient-form").addEventListener("submit", event => {
   const added = current.size - previousCount;
   updatePantry();
   field.value = "";
+  if (searching) {
+    state.searched = true;
+    message(unknown ? `${unknown} ingrédient${unknown > 1 ? "s hors catalogue" : " hors catalogue"}.` : "");
+    showRecipes(false);
+    byId("recipes-title").focus({ preventScroll: true });
+    byId("recettes").scrollIntoView({ block: "start" });
+    return;
+  }
   field.focus();
   if (!added) message("Ces ingrédients sont déjà dans cette liste.");
   else if (unknown) message(`${added} ajouté${added > 1 ? "s" : ""}, dont ${unknown} hors catalogue.`);
@@ -370,6 +398,8 @@ byId("ingredient-form").addEventListener("submit", event => {
 });
 
 for (const button of storageButtons) button.addEventListener("click", () => {
+  if (state.storage === button.dataset.storage) return;
+  if (byId("ingredient-input").value.trim()) byId("ingredient-form").requestSubmit();
   state.storage = button.dataset.storage;
   message("");
   renderPantry();
@@ -413,19 +443,39 @@ byId("hero-add").addEventListener("click", event => {
   event.preventDefault();
   focusIngredient();
 });
-byId("recipes-nav").addEventListener("click", () => {
-  state.dessertOnly = false;
+function setView(view) {
+  if (state.view === view && !state.favoritesOnly) return;
+  if (state.view !== view) state.searched = false;
+  state.view = view;
+  byId("ingredients").hidden = view !== "ingredients";
+  byId("cuisine").classList.toggle("search-workspace", view === "ingredients");
+  for (const link of document.querySelectorAll(".header-nav a")) {
+    const active = link.hash === `#${view === "accueil" ? "recettes" : view}`;
+    if (active) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  }
   showRecipes(false);
-});
-for (const button of document.querySelectorAll("[data-category]")) {
-  button.addEventListener("click", () => {
-    state.dessertOnly = button.dataset.category === "dessert";
-    const url = new URL(location.href);
-    url.hash = state.dessertOnly ? "desserts" : "recettes";
-    history.replaceState(null, "", url);
-    showRecipes(false);
+}
+
+function syncView() {
+  const view = location.hash.slice(1);
+  setView(view || "accueil");
+  if (view === "desserts" || view === "recettes") byId("recettes").scrollIntoView({ block: "start" });
+  if (view === "ingredients") byId("ingredients").scrollIntoView({ block: "start" });
+}
+
+window.addEventListener("hashchange", syncView);
+for (const link of document.querySelectorAll(".header-nav a")) {
+  link.addEventListener("click", () => {
+    if (location.hash === link.hash) syncView();
   });
 }
+for (const button of document.querySelectorAll("[data-category]")) {
+  button.addEventListener("click", () => {
+    location.hash = button.dataset.category === "dessert" ? "desserts" : "recettes";
+  });
+}
+syncView();
 byId("favorites-toggle").addEventListener("click", () => {
   showRecipes(!state.favoritesOnly);
   byId("recettes").scrollIntoView({ block: "start" });
@@ -445,6 +495,8 @@ byId("recipe-grid").addEventListener("click", event => {
   else if (open) openRecipe(open.dataset.open);
   else if (event.target.closest("[data-show-all]")) {
     showRecipes(false);
+    location.hash = "recettes";
+    setView("recettes");
     byId("filters").querySelector('[data-filter="all"]').focus();
   } else if (event.target.closest("[data-reset-filter]")) {
     state.filter = "all";

@@ -3,33 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f6ef">
+  <meta name="theme-color" content="#fff5e8">
   <meta name="description" content="Trouve des recettes à partir des ingrédients de ton frigo et de ton placard, avec les calories et les macronutriments par portion.">
   <title>Placard &amp; Poêle — Recettes avec tes ingrédients</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%233b5538'/%3E%3Cpath d='M17 31a7 7 0 0 1 10-6 7 7 0 0 1 14 0 7 7 0 0 1 6 12l-3 2v8H21v-8l-3-2a7 7 0 0 1-1-6ZM21 42h23' fill='none' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='17' fill='%238f3927'/%3E%3Cpath d='M17 31a7 7 0 0 1 10-6 7 7 0 0 1 14 0 7 7 0 0 1 6 12l-3 2v8H21v-8l-3-2a7 7 0 0 1-1-6ZM21 42h23' fill='none' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=mon-frigo">
   <script src="ingredients.js?v=ca276e63e981" defer></script>
-  <script src="recipes.js?v=965a41dbd14d" defer></script>
-  <script src="app.js?v=8b11b116b8af" defer></script>
+  <script src="recipes.js?v=965a41dbd14d-frigo" defer></script>
+  <script src="app.js?v=mon-frigo" defer></script>
   <script>
     // GitHub Pages may serve an older copy of the homepage from cache.
     window.addEventListener("pageshow", async () => {
       if (!["https:", "http:"].includes(location.protocol)) return;
-      const catalogVersion = page => {
-        const script = page.querySelector('script[src^="recipes.js?v="]');
+      const appVersion = page => {
+        const script = page.querySelector('script[src^="app.js?v="]');
         return script && new URL(script.getAttribute("src"), location.href).searchParams.get("v");
       };
-      const current = catalogVersion(document);
+      const current = appVersion(document);
       const pageUrl = new URL(location.href);
       const checkUrl = new URL("index.html", pageUrl);
       checkUrl.searchParams.set("check", Date.now());
       try {
         const response = await fetch(checkUrl, {cache: "no-store"});
         if (!response.ok) return;
-        const latest = catalogVersion(new DOMParser().parseFromString(await response.text(), "text/html"));
+        const latest = appVersion(new DOMParser().parseFromString(await response.text(), "text/html"));
         if (!latest || latest === current || latest === pageUrl.searchParams.get("v")) return;
         pageUrl.searchParams.set("v", latest);
         location.replace(pageUrl);
@@ -48,6 +48,7 @@
     <symbol id="i-basket" viewBox="0 0 24 24"><path d="m4 11 2 8h12l2-8M2.5 11h19M7 11l4-6m6 6-4-6m-3 9v2m4-2v2"/></symbol>
     <symbol id="i-fridge" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 10h12m-9-4v1m0 6v2"/></symbol>
     <symbol id="i-cupboard" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 4v16m-3-9v2m6-2v2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></symbol>
@@ -67,8 +68,9 @@
         <span>Placard <i>&amp;</i> Poêle</span>
       </a>
       <nav class="header-nav" aria-label="Navigation principale">
-        <a href="#ingredients">Mes ingrédients</a>
-        <a href="#recettes" id="recipes-nav">Recettes</a>
+        <a href="#ingredients">Mon frigo</a>
+        <a href="#recettes">Recettes</a>
+        <a href="#desserts">Pâtisserie</a>
       </nav>
       <button class="favorites-button" id="favorites-toggle" type="button" aria-pressed="false">
         <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span>Favoris</span><span class="favorites-count" id="favorites-count" hidden></span>
@@ -81,15 +83,15 @@
       <div class="hero-content">
         <h1 id="hero-title">Du placard<br><em>à l’assiette.</em></h1>
         <p>Qu’est-ce qu’on mange ? Trouve une recette avec ce que tu as déjà chez toi.</p>
-        <a class="button hero-button" href="#ingredients" id="hero-add">Ajouter mes ingrédients <svg class="icon" aria-hidden="true"><use href="#i-down"/></svg></a>
+        <a class="button hero-button" href="#ingredients" id="hero-add">Ouvrir mon frigo <svg class="icon" aria-hidden="true"><use href="#i-down"/></svg></a>
       </div>
     </section>
 
     <div class="workspace" id="cuisine">
-      <aside class="pantry" id="ingredients" aria-labelledby="pantry-title">
+      <aside class="pantry" id="ingredients" hidden aria-labelledby="pantry-title">
         <div class="pantry-heading">
           <span class="section-icon"><svg class="icon" aria-hidden="true"><use href="#i-basket"/></svg></span>
-          <div><h2 id="pantry-title">Mes ingrédients</h2><p id="pantry-summary">Ton frigo et ton placard</p></div>
+          <div><h2 id="pantry-title">Mon frigo et mon placard</h2><p id="pantry-summary">Ton frigo et ton placard</p></div>
         </div>
         <div class="storage-switch" role="group" aria-label="Où ranger les ingrédients ?">
           <button type="button" data-storage="frigo" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#i-fridge"/></svg>Frigo <span hidden></span></button>
@@ -113,15 +115,16 @@
           <button class="text-button" id="load-example" type="button"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Essayer un exemple</button>
           <button class="text-button clear-button" id="clear-pantry" type="button" hidden>Tout vider</button>
         </div>
+        <button class="button search-button" id="search-recipes" form="ingredient-form" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Rechercher</button>
       </aside>
 
       <section class="recipes" id="recettes" aria-labelledby="recipes-title">
-        <div class="filters" id="desserts" role="group" aria-label="Catégorie de recettes" style="margin-bottom: 1rem">
+        <div class="filters" id="catalog-categories" role="group" aria-label="Catégorie de recettes">
           <button type="button" data-category="savory" aria-pressed="true">Plats salés</button>
           <button type="button" data-category="dessert" aria-pressed="false">Pâtisserie &amp; desserts</button>
         </div>
         <div class="recipes-heading">
-          <h2 id="recipes-title">À table !</h2>
+          <h2 id="recipes-title" tabindex="-1">À table !</h2>
           <p id="recipes-description">Des idées simples, avec les valeurs nutritionnelles par portion.</p>
         </div>
         <div class="results-tools">
