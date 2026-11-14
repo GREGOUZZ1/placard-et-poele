@@ -291,6 +291,79 @@ function focusIngredient() {
   byId("ingredient-input").focus({ preventScroll: true });
 }
 
+// Un temps de cuisson correspond au premier contrôle indiqué dans la recette.
+let cookingTimer = null;
+let timerInterval;
+let timerAudio;
+
+function preparationStep(step, index) {
+  const durations = [...step.matchAll(/\b(\d+)\s*(?:à\s*\d+\s*)?(?:minutes?|min)\b/gi)];
+  const buttons = durations.map(([, minutes]) => (
+    `<button type="button" class="step-timer" aria-label="Démarrer le minuteur de ${minutes} min pour l’étape ${index + 1}" data-timer-minutes="${minutes}" data-step="${index + 1}">${icon("clock")} ${minutes} min</button>`
+  ));
+  return `<li>${step}${buttons.length ? `<div class="step-timers">${buttons.join("")}</div>` : ""}</li>`;
+}
+
+function renderTimer() {
+  const seconds = cookingTimer ? Math.max(0, Math.ceil((cookingTimer.endsAt - Date.now()) / 1000)) : 0;
+  const finished = Boolean(cookingTimer && !seconds);
+  const label = byId("timer-status");
+  const status = finished ? "Minuteur terminé" : cookingTimer ? cookingTimer.label : "";
+  if (label.textContent !== status) label.textContent = status;
+  byId("timer-countdown").textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  byId("timer-panel").hidden = !cookingTimer;
+  for (const button of document.querySelectorAll("[data-stop-timer]")) {
+    button.textContent = finished ? "Fermer" : "Arrêter";
+  }
+  byId("dialog-timer-panel").hidden = !cookingTimer;
+  const dialogStatus = byId("dialog-timer-status");
+  if (dialogStatus.textContent !== status) dialogStatus.textContent = status;
+  byId("dialog-timer-countdown").textContent = byId("timer-countdown").textContent;
+  if (!finished || cookingTimer.finished) return;
+  cookingTimer.finished = true;
+  clearInterval(timerInterval);
+  if (timerAudio?.state !== "running") return;
+  const tone = timerAudio.createOscillator();
+  const volume = timerAudio.createGain();
+  const now = timerAudio.currentTime;
+  tone.frequency.value = 660;
+  volume.gain.setValueAtTime(.15, now);
+  volume.gain.exponentialRampToValueAtTime(.001, now + .65);
+  tone.connect(volume).connect(timerAudio.destination);
+  tone.start(now);
+  tone.stop(now + .65);
+}
+
+function startTimer(minutes, step) {
+  if (!Number.isFinite(minutes) || minutes <= 0 || minutes > 180) return;
+  if (cookingTimer && !cookingTimer.finished) {
+    byId("dialog-timer-note").textContent = "Arrête le minuteur en cours pour en lancer un autre.";
+    return;
+  }
+  byId("dialog-timer-note").textContent = "";
+  const recipe = state.currentRecipe;
+  const label = step ? `${recipe.title} · étape ${step}` : recipe.title;
+  cookingTimer = { label, endsAt: Date.now() + minutes * 60000 };
+  if ("AudioContext" in window) {
+    try {
+      timerAudio ??= new AudioContext();
+      timerAudio.resume().catch(() => {});
+    } catch {
+      // Le compte à rebours reste affiché si le son est indisponible.
+    }
+  }
+  clearInterval(timerInterval);
+  timerInterval = setInterval(renderTimer, 250);
+  renderTimer();
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  cookingTimer = null;
+  byId("dialog-timer-note").textContent = "";
+  renderTimer();
+}
+
 function openRecipe(id) {
   const recipe = recipeById.get(id);
   state.currentRecipe = recipe;
@@ -320,6 +393,7 @@ function openRecipe(id) {
         <div id="dialog-macros" aria-live="polite" aria-atomic="true"></div>
         <p class="nutrition-source">Estimations à partir des quantités indiquées. Les valeurs varient selon les produits et la préparation.</p>
       </section>
+      <p id="dialog-timer-note" class="timer-note" role="status"></p>
       <div class="dialog-columns">
         <section aria-labelledby="dialog-ingredients-title">
           <h3 id="dialog-ingredients-title">Ingrédients</h3>
@@ -328,7 +402,11 @@ function openRecipe(id) {
         </section>
         <section aria-labelledby="recipe-steps-title">
           <h3 id="recipe-steps-title">Préparation</h3>
-          <ol class="recipe-steps">${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
+          <ol class="recipe-steps">${(detailedSteps[recipe.id] ?? recipe.steps).map(preparationStep).join("")}</ol>
+          <form id="custom-timer" class="custom-timer">
+            <label for="timer-minutes">Minuteur libre (min)</label>
+            <div><input id="timer-minutes" type="number" min="0.1" max="180" step="any" value="5" required inputmode="decimal"><button class="step-timer" type="submit">Démarrer</button></div>
+          </form>
         </section>
       </div>
     </div>`;
@@ -517,7 +595,8 @@ byId("recipe-dialog").addEventListener("close", () => {
 byId("dialog-content").addEventListener("click", event => {
   const button = event.target.closest("button");
   if (!button) return;
-  const { servings, nutrition, favorite } = button.dataset;
+  const { servings, nutrition, favorite, timerMinutes, step } = button.dataset;
+  if (timerMinutes) startTimer(Number(timerMinutes), step);
   if (servings) {
     state.servings = Math.max(1, Math.min(24, state.servings + Number(servings)));
     renderDialogValues();
@@ -527,6 +606,16 @@ byId("dialog-content").addEventListener("click", event => {
     renderDialogValues();
   } else if (favorite) toggleFavorite(favorite, true);
 });
+
+byId("dialog-content").addEventListener("submit", event => {
+  if (event.target.id !== "custom-timer") return;
+  event.preventDefault();
+  startTimer(byId("timer-minutes").valueAsNumber);
+});
+for (const button of document.querySelectorAll("[data-stop-timer]")) {
+  button.addEventListener("click", stopTimer);
+}
+document.addEventListener("visibilitychange", renderTimer);
 
 window.addEventListener("storage", event => {
   if (event.key !== STORAGE_KEY && event.key !== null) return;

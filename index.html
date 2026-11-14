@@ -10,10 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=mon-frigo">
+  <link rel="stylesheet" href="styles.css?v=minuteur">
   <script src="ingredients.js?v=ca276e63e981" defer></script>
   <script src="recipes.js?v=965a41dbd14d-frigo" defer></script>
-  <script src="app.js?v=mon-frigo" defer></script>
+  <script src="preparation.js?v=minuteur" defer></script>
+  <script src="app.js?v=minuteur" defer></script>
   <script>
     // GitHub Pages may serve an older copy of the homepage from cache.
     window.addEventListener("pageshow", async () => {
@@ -150,8 +151,17 @@
     </div>
   </footer>
 
+    <div class="timer-panel" id="timer-panel" hidden>
+      <div><span id="timer-status" role="status"></span><span class="timer-countdown" id="timer-countdown" role="timer"></span></div>
+      <button class="step-timer" type="button" data-stop-timer>Arrêter</button>
+    </div>
+
   <dialog id="recipe-dialog" class="recipe-dialog" aria-labelledby="dialog-title">
     <button class="icon-button dialog-close" id="close-dialog" type="button" aria-label="Fermer la recette" autofocus><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <div class="timer-panel" id="dialog-timer-panel" hidden>
+      <div><span id="dialog-timer-status" role="status"></span><span class="timer-countdown" id="dialog-timer-countdown" role="timer"></span></div>
+      <button class="step-timer" type="button" data-stop-timer>Arrêter</button>
+    </div>
     <div id="dialog-content"></div>
   </dialog>
 </body>
